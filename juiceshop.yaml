@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: juice-shop
+  labels:
+    app: juice
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: juice
+  template:
+    metadata:
+      labels:
+        app: juice
+    spec:
+      containers:
+      - name: juice-shop
+        image: bkimminich/juice-shop:latest  # Use the official Docker image
+        ports:
+        - containerPort: 3000
+        resources:
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: juice-shop
+spec:
+  type: LoadBalancer # Use LoadBalancer to expose it externally, or NodePort/ClusterIP
+  ports:
+  - port: 80
+    targetPort: 3000
+    protocol: TCP
+    name: http
+  selector:
+    app: juice
